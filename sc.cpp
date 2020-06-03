@@ -27,7 +27,8 @@ struct coolBoard {
 short boardX = 250, boardY = 100;	// 보드판의 왼쪽아래 모서리 좌표
 char boardSize = 50;				// 보드판 한칸 크기. 가로 and 세로
 char enemyStartX = 0, enemyStartY = 10;		// 적 대기 위치.
-char enemyFinX = 0, enemyFinY = 0;
+char enemyFinX = 0, enemyFinY = 0;			// 적 마지막 위치.
+const char roadLength = 45;
 coolBoard enemyRoad[60] = { {0, 9}, {0, 8}, {0, 7}, {0, 6}, {1, 6}, {2, 6}, {3, 6}, {4, 6}, {5, 6}, {6, 6}, {7, 6}, {8, 6}, {9, 6}, {9, 7},
 	{9, 8}, {9, 9}, {8, 9}, {7, 9}, {6, 9}, {6, 8}, {6, 7}, {6, 6}, {6, 5}, {6, 4}, {6, 3}, {6, 2}, {6, 1}, {6, 0}, {7, 0}, {8, 0}, {9, 0},
 	{9, 1}, {9, 2}, {9, 3}, {8, 3}, {7, 3}, {6, 3}, {5, 3}, {4, 3}, {3, 3}, {2, 3}, {2, 2}, {2, 1}, {2, 0}, {1, 0}, {0, 0} };			// 적 이동 경로			
@@ -58,8 +59,8 @@ void locateOnBoard(ObjectID object, SceneID scene, coolBoard coolboard) {
 void calculateDirection() {
 	char from = UP;
 	char to = DOWN;
-	for (int i = 0; i < 46; i++) {
-		char fromX, fromY, tempX, tempY, toX, toY, dx, dy;
+	for (int i = 0; i < roadLength; i++) {
+		char fromX, fromY,  toX, toY, dx, dy, direction;
 		if (i == 0) {
 			fromX = enemyStartX, fromY = enemyStartY;
 		}
@@ -67,7 +68,7 @@ void calculateDirection() {
 			fromX = enemyRoad[i - 1].x;
 			fromY = enemyRoad[i - 1].y;
 		}
-		if(i == 46){
+		if(i == (roadLength-1)){
 			toX = enemyFinX, toY = enemyFinY;
 		}
 		else {
@@ -76,10 +77,22 @@ void calculateDirection() {
 		}
 		dx = fromX - enemyRoad[i].x;
 		dy = fromY - enemyRoad[i].y;
-		roadDirection[i][0] = 2 * dx + dy + 2;
+		direction = 2 * dx + dy + 2;
+		if (direction > 4 || direction < 0 || direction == 2) {
+			printf("Somthing wrong with enemy road : %d, from dir : %d\n", i, direction);
+			return;
+
+		}
+		roadDirection[i][0] = direction;
 		dx = toX - enemyRoad[i].x;
 		dy = toY - enemyRoad[i].y;
-		roadDirection[i][1] = 2 * dx + dy + 2;
+		direction = 2 * dx + dy + 2;
+		if (direction > 4 || direction < 0 || direction == 2) {
+			printf("Somthing wrong with enemy road : %d, to dir : %d\n", i, direction);
+			return;
+
+		}
+		roadDirection[i][1] = direction;
 		
 	}
 }
